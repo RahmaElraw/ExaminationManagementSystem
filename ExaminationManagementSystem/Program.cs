@@ -22,21 +22,21 @@
                 if (mode == 1)
                 {
                     Console.WriteLine($"\nHello {instructor.Name}");
-                    char more;
-                    do
+                    Console.Write("How many questions do you want to add? ");
+                    int numberOfQuestions;
+
+                    while (!int.TryParse(Console.ReadLine(), out numberOfQuestions) || numberOfQuestions <= 0)
                     {
-                        instructor.AddQuestion();
-                        Console.Write("Add another question? (y/n): ");
-                        more = Convert.ToChar(Console.ReadLine());
-                        while (more != 'y' && more != 'n')
-                        {
-                            Console.Write("invalid choice, try again: ");
-                            more = Convert.ToChar(Console.ReadLine());
-                        }
-                        Console.WriteLine();
+                        Console.Write("Invalid number, try again: ");
                     }
-                    while (more == 'y');
-                    Console.WriteLine("\nAll Questions Added");
+
+                    for (int i = 0; i < numberOfQuestions; i++)
+                    {
+                        Console.WriteLine($"\nAdding Question {i + 1}");
+                        instructor.AddQuestion();
+                    }
+
+                    Console.WriteLine("\nAll Questions Added Successfully!");
                 }
                 else
                 {
@@ -65,7 +65,8 @@
                     decision = Convert.ToChar(Console.ReadLine());
                 }
             }
-            Console.WriteLine("Program Exited. Goodbye!");
+            Console.WriteLine("Goodbye!");
         }
     }
 }
+

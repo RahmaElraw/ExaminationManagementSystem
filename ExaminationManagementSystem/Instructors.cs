@@ -12,9 +12,10 @@ namespace ExaminationManagementSystem
             Console.WriteLine("Choose Question Type:");
             Console.WriteLine("1 - MCQ");
             Console.WriteLine("2 - True/False");
+            Console.WriteLine("3 - Multiple Choice (Multiple Answers)");
             Console.WriteLine("Enter Number of Type");
             int type;
-            while (!int.TryParse(Console.ReadLine(), out type) || (type != 1 && type != 2))
+            while (!int.TryParse(Console.ReadLine(), out type) || (type != 1 && type != 2 && type!=3))
             {
                 Console.WriteLine("Invalid choice, try again: ");
             }
@@ -53,14 +54,14 @@ namespace ExaminationManagementSystem
 
                 QuestionBank.Add(new MCQ
                 {
-                   Body=body,
-                   Marks=marks,
-                   Difficulty=difficulty,
-                   Choices=choices,
-                   CorrectAnswer=correct
+                    Body = body,
+                    Marks = marks,
+                    Difficulty = difficulty,
+                    Choices = choices,
+                    CorrectAnswer = correct
                 });
             }
-            else
+            else if (type == 2)
             {
                 Console.Write("Enter Correct Answer (true/false): ");
                 bool correct;
@@ -75,11 +76,80 @@ namespace ExaminationManagementSystem
                     CorrectAnswer = correct,
                 });
             }
-            Console.WriteLine("Question Added Successfully ");
+            else if (type == 3)
+            {
+                Console.Write("Enter number of choices: ");
+                int numChoices;
+                while (!int.TryParse(Console.ReadLine(), out numChoices) || numChoices <= 1)
+                    Console.Write("Invalid number, try again: ");
+
+                string[] choices = new string[numChoices];
+                for (int i = 0; i < numChoices; i++)
+                {
+                    Console.Write($"Choice {i + 1}: ");
+                    choices[i] = Console.ReadLine();
+                }
+
+                Console.WriteLine("Enter correct answers as numbers separated by , ");
+                List<int> correctAnswers=new List<int>();
+                while (true)
+                {
+                    correctAnswers.Clear();
+                    string input = Console.ReadLine();
+                    string[] parts = input.Split(',');
+
+                    bool valid = true;
+
+                    for (int i = 0; i < parts.Length; i++)
+                    {
+                        int num;
+
+                        if (int.TryParse(parts[i].Trim(), out num))
+                        {
+                            if (num >= 1 && num <= numChoices)
+                            {
+                                if (!correctAnswers.Contains(num))
+                                    correctAnswers.Add(num);
+                                else
+                                {
+                                    valid = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                valid = false;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            valid = false;
+                            break;
+                        }
+                    }
+
+                    if (valid && correctAnswers.Count > 0)
+                        break;
+
+                    Console.Write("Invalid input, try again: ");
+                }
+
+                QuestionBank.Add(new MultipleChoiceQuestions
+                {
+                    Body = body,
+                    Marks = marks,
+                    Difficulty = difficulty,
+                    Choices = choices,
+                    CorrectAnswers = correctAnswers
+                });
+            }
+                Console.WriteLine("Question Added Successfully ");
         }
         public Exams SetExam(int choice)
         {
             Exams exam = choice == 1 ? new PracticeExam() : new FinalExam();
+
 
             exam.Time = 30;
             exam.questions = QuestionBank;
